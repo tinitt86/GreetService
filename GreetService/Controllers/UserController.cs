@@ -1,12 +1,15 @@
 ﻿using GreetService.Contract;
 using GreetService.Domain;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System;
 
 namespace GreetService.Controllers
 {
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private string _defaultMsg = "Hello, World!";
 
         public UserController(IUserService userService)
         {
@@ -15,25 +18,27 @@ namespace GreetService.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return Content(_defaultMsg);
         }
 
         [Route("user/{id}")]
         public IActionResult Index(int id)
         {
-            var defaultMsg = "Hello, World!";
+            
             if (id > 0)
-            {
-                
+            {                
                 User user = _userService.GetUser(id);
                 if (user != null)
-                    return Content(string.Format("Hello, {0} {1}", user.FirstName, user.LastName));
+                {
+                    int index = new Random().Next(user.Alias.Count);                    
+                    return Content(string.Format("Hello, {0}", user.Alias[index])); 
+                }
                 else
-                    return Content(defaultMsg);
+                    return Content(_defaultMsg);
             }
             else
             {
-                return Content(defaultMsg);
+                return Content(_defaultMsg);
             }
         }
 
